@@ -17,7 +17,7 @@ defineProps<{
 <style scoped>
 .center-reveal-container {
   /* 容器可以是块级或行内块，取决于具体需求，这里默认 fit-content */
-  width: fit-content;
+  width: 100%;
   height: fit-content;
 }
 

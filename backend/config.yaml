@@ -45,3 +45,10 @@ translator:
     base_url: "https://api.openai.com/v1"
     model: "gpt-3.5-turbo"
 
+asr:
+  select: volcengine_api
+  volcengine_api:
+    api_key: "b2178a43-fe94-4ead-a5cf-c0e53ffa3380"
+    model_name: "bigmodel"
+    resource_id: "volc.seedasr.auc"
+

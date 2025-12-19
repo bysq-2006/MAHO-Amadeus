@@ -83,9 +83,6 @@ class WSHandler():
                         await websocket.send_text(json.dumps({"type": "error", "msg": "未授权，请先登录"}))
                         continue
                     
-                    # 如果有正在进行的聊天，先中断它（实现打断效果）
-                    await self.interrupt_chat(websocket, Amadeus)
-                    
                     # 创建新的聊天任务，不阻塞主循环以接收后续消息（如打断信号）
                     self.current_chat_task = asyncio.create_task(
                         handle_chat(websocket, Amadeus, msg.get("data")))

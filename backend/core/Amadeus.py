@@ -4,6 +4,7 @@ from core.util.config import load_yaml
 from core.component.llm.LLMService import LLM
 from core.component.tts.TTSService import TTS
 from core.component.translator.TranslatorService import Translator
+from core.component.asr.ASRService import ASR
 
 
 class BaseAmadeus:
@@ -17,6 +18,7 @@ class BaseAmadeus:
         self.llm = LLM(self.config.get("llm", {}))
         self.tts = TTS(self.config.get("tts", {}))
         self.translator = Translator(self.config.get("translator", {}))
+        self.asr = ASR(self.config.get("asr", {}))
 
         self.message_queue = asyncio.Queue()  # 使用 asyncio.Queue 以支持异步操作
         self.sentence_queue = asyncio.Queue()  # 句子队列，用于 TTS 处理

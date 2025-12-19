@@ -1,7 +1,6 @@
 <template>
   <div class="home-page">
     <div v-if="wsStatus !== 'connected'" class="ws-status-tip">WebSocket连接失效，正在尝试连接...</div>
-
     <!-- 左上角按钮区 -->
     <div class="button-sidebar">
       <div class="side-button" :class="{ active: buttonStates.video }" @click="buttonStates.video = !buttonStates.video"
@@ -10,10 +9,8 @@
       </div>
       <!-- 可以在这里继续添加更多按钮 -->
     </div>
-
     <dialogBox class="dialog" />
     <illustration ref="illustrationRef" class="illustrat" />
-    <div class="meswin-bg"></div>
   </div>
 </template>
 
@@ -23,30 +20,28 @@ import dialogBox from './dialogBox.vue'
 import { onMounted, ref } from 'vue'
 import { useHomeStore } from '@/stores/home'
 import { storeToRefs } from 'pinia'
-const wsStore = useHomeStore()
-const { audioQueue, wsStatus, buttonStates } = storeToRefs(wsStore)
+const homeStore = useHomeStore()
+const { audioQueue, wsStatus, buttonStates } = storeToRefs(homeStore)
+const { getAudioContext } = homeStore
 const illustrationRef = ref(null)
 
-// 音频上下文和分析器
-let audioContext = null
+// 音频分析器
 let analyser = null
 let dataArray = null
 
 const initAudioContext = () => {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const audioContext = getAudioContext()
+  if (!analyser) {
     analyser = audioContext.createAnalyser()
     analyser.fftSize = 256
     dataArray = new Uint8Array(analyser.frequencyBinCount)
   }
+  return audioContext
 }
 
 const playAudio = (blob) => {
   return new Promise(async (resolve) => {
-    initAudioContext()
-    if (audioContext.state === 'suspended') {
-      await audioContext.resume()
-    }
+    const audioContext = initAudioContext()
 
     const arrayBuffer = await blob.arrayBuffer()
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
@@ -202,8 +197,8 @@ onMounted(() => {
 .dialog {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  width: 100%;
   z-index: 2;
 }
 </style>

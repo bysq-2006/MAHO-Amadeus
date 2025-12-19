@@ -10,7 +10,7 @@
         v-model="dialogText" @keyup="sendTextToWS" ref="textareaRef"></textarea>
       <SpritePlayer v-if="!isWaiting" :src="ringImg" :rows="12" :columns="5" :fps="45" :width="spriteSize"
         :height="spriteSize" :totalFrames="60" :loop="0"
-        :style="{ position: 'fixed', left: caretX + 'px', top: caretY + 'px', pointerEvents: 'none', zIndex: 9999 }" />
+        :style="{ position: 'absolute', left: caretX + 'px', top: caretY + 'px', pointerEvents: 'none', zIndex: 9999 }" />
     </CenterRevealMask>
   </div>
 </template>
@@ -18,7 +18,7 @@
 <script setup lang="js">
 import meswinName from './meswinName.vue';
 import { useHomeStore } from '@/stores/home';
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import CenterRevealMask from '../../component/CenterRevealMask.vue'
 import SpritePlayer from '../../component/SpritePlayer.vue'
@@ -27,9 +27,9 @@ import getCaretCoordinates from 'textarea-caret';
 import meswinImg from '@/assets/meswin/meswin.png'
 import ringImg from '@/assets/sprite/ring.png'
 
-const wsStore = useHomeStore()
-const { textQueue, isWaiting, currentName } = storeToRefs(wsStore)
-const { send } = wsStore
+const homeStore = useHomeStore()
+const { textQueue, isWaiting, currentName } = storeToRefs(homeStore)
+const { send } = homeStore
 const showMask = ref(false)
 
 const dialogText = ref('');
@@ -84,7 +84,7 @@ function closeMask() {
   isWaiting.value = true
 }
 
-window.addEventListener('keydown', (e) => {
+const handleKeyDown = (e) => {
   if (e.key.toLowerCase() === 'h' && e.shiftKey) {
     if (showMask.value) {
       closeMask();
@@ -92,14 +92,22 @@ window.addEventListener('keydown', (e) => {
       openMask();
     }
   }
-});
+}
 
 onMounted(() => {
+  homeStore.initVAD()
+
+
+  window.addEventListener('keydown', handleKeyDown);
   processTextQueue();
   setTimeout(() => {
     openMask()
     updateCaret()
   }, 1000)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
 })
 </script>
 
@@ -127,16 +135,12 @@ onMounted(() => {
   line-height: 1.6;
   box-sizing: border-box;
   border-bottom: 2px solid #e6a23c;
-  margin: 0 auto;
-  overflow: hidden;
-  /* 隐藏滚动条 */
-  resize: none;
-
   position: absolute;
   bottom: 0;
   left: 0;
+  resize: none;
 
-  width: 100vw;
+  width: 100%;
   height: 246px;
   /* 改为固定像素 */
   overflow-y: auto;
@@ -154,7 +158,7 @@ onMounted(() => {
 .bg-container {
   position: relative;
   /* 改回 relative 以撑开父容器宽度 */
-  width: 100vw;
+  width: 100%;
   height: 256px;
   /* 与 textarea 保持一致 */
   display: flex;
