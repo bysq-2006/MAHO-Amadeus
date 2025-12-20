@@ -28,6 +28,6 @@ class Client:
             # 这里需要特殊处理，但在当前架构下通常是在线程池中调用
             # 或者如果调用者是 async 的，应该修改 translate 为 async
             # 这里为了兼容性，如果报错则尝试直接返回（虽然这不可能，因为接口定义是 str）
-            return "Error: Cannot run async translation in current context."
+            return "错误: 无法在当前上下文中运行异步翻译。"
         except Exception as e:
-            return f"Translation Error: {str(e)}"
+            return f"翻译错误: {str(e)}"

@@ -52,8 +52,8 @@ class Client:
                 return response.content
             else:
                 logging.error(
-                    f"TTS API Error: {response.status_code} - {response.text}")
+                    f"TTS API 错误: {response.status_code} - {response.text}")
                 return None
         except Exception as e:
-            logging.error(f"TTS Request Failed: {e}")
+            logging.error(f"TTS 请求失败: {e}")
             return None

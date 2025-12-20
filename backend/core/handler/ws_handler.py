@@ -90,6 +90,21 @@ class WSHandler():
                 elif msg.get("type") == "interrupt":
                     # 显式接收到打断信号
                     await self.interrupt_chat(websocket, Amadeus)
+                
+                elif msg.get("type") == "audio":
+                    # 接收音频数据
+                    token = msg.get("token")
+                    if not token or not self.auth_manager.verify_token(token):
+                        await websocket.send_text(json.dumps({"type": "error", "msg": "未授权，请先登录"}))
+                        continue
+                    
+                    audio_data = msg.get("data")
+                    logging.info(f"收到音频数据，长度: {len(audio_data) if audio_data else 0}")
+                    # 简单输出到屏幕
+                    print(f"\n[Audio Received] Length: {len(audio_data) if audio_data else 0}")
+                    if audio_data:
+                        print(f"Data Preview: {audio_data[:50]}...")
+                    print("-" * 30)
         except WebSocketDisconnect:
             logging.info("WebSocket 已断开")
         finally:

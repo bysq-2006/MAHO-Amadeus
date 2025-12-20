@@ -35,4 +35,4 @@ class Client:
                 if chunk.choices and chunk.choices[0].delta.content:
                     yield chunk.choices[0].delta.content
         except Exception as e:
-            yield f"Error: {str(e)}"
+            yield f"错误: {str(e)}"

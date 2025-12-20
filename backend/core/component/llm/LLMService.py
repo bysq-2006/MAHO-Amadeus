@@ -41,4 +41,4 @@ class LLM:
         if hasattr(self, 'provider') and self.provider:
             return getattr(self.provider, name)
         raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
+            f"'{type(self).__name__}' 对象没有属性 '{name}'")

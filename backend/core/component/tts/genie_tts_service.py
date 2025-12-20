@@ -63,7 +63,7 @@ class Client:
         
         # 设置 GENIE_DATA_DIR 环境变量（必须在导入 genie_tts 之前）
         os.environ["GENIE_DATA_DIR"] = genie_data_dir
-        logging.info(f"GENIE_DATA_DIR set to: {genie_data_dir}")
+        logging.info(f"GENIE_DATA_DIR 已设置为: {genie_data_dir}")
         
         # 导入 genie_tts（在设置环境变量之后）
         import genie_tts as genie
@@ -82,7 +82,7 @@ class Client:
                 onnx_model_dir=self.onnx_model_dir,
                 language=self.language,
             )
-            logging.info(f"Successfully loaded character: {self.character_name}")
+            logging.info(f"成功加载角色: {self.character_name}")
             
             # 如果提供了参考音频，则设置参考音频
             if self.reference_audio_path and self.reference_audio_text:
@@ -94,7 +94,7 @@ class Client:
             self.is_loaded = True
             
         except Exception as e:
-            logging.error(f"Failed to load Genie TTS model: {e}")
+            logging.error(f"加载 Genie TTS 模型失败: {e}")
             raise
     
     def _set_reference_audio(self, audio_path: str, audio_text: str):
@@ -112,10 +112,10 @@ class Client:
                 audio_path=str(ref_path),
                 audio_text=audio_text,
             )
-            logging.info(f"Reference audio set: {ref_path}")
+            logging.info(f"参考音频已设置: {ref_path}")
             
         except Exception as e:
-            logging.error(f"Failed to set reference audio: {e}")
+            logging.error(f"设置参考音频失败: {e}")
             raise
     
     def generate_audio(self, 
@@ -132,7 +132,7 @@ class Client:
         :return: 音频二进制数据（WAV 格式）
         """
         if not self.is_loaded:
-            logging.error("Model not loaded. Cannot generate audio.")
+            logging.error("模型未加载，无法生成音频。")
             return None
         
         try:
@@ -162,7 +162,7 @@ class Client:
                 with open(tmp_path, 'rb') as f:
                     audio_data = f.read()
                 
-                logging.info(f"Successfully generated audio for text: {text[:50]}...")
+                logging.info(f"成功为文本生成音频: {text[:50]}...")
                 return audio_data
                 
             finally:
@@ -171,7 +171,7 @@ class Client:
                     os.unlink(tmp_path)
                     
         except Exception as e:
-            logging.error(f"TTS generation failed: {e}")
+            logging.error(f"TTS 生成失败: {e}")
             return None
     
     def set_reference(self, audio_path: str, audio_text: str):

@@ -51,7 +51,7 @@ class Client:
             response = await client.post(self.submit_url, json=request_body, headers=headers, timeout=30)
             
             if response.headers.get("X-Api-Status-Code") != "20000000":
-                raise Exception(f"ASR Task Submission Failed: {response.text}")
+                raise Exception(f"ASR 任务提交失败: {response.text}")
 
             x_tt_logid = response.headers.get("X-Tt-Logid", "")
             
@@ -73,4 +73,4 @@ class Client:
                 elif code in ['20000001', '20000002']:  # 任务运行中/排队中
                     await asyncio.sleep(2)
                 else:
-                    raise Exception(f"ASR Task Query Failed (Code: {code}): {query_response.text}")
+                    raise Exception(f"ASR 任务查询失败 (代码: {code}): {query_response.text}")

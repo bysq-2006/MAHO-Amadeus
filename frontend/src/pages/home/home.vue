@@ -19,10 +19,12 @@ import illustration from './illustration.vue'
 import dialogBox from './dialogBox.vue'
 import { onMounted, ref } from 'vue'
 import { useHomeStore } from '@/stores/home'
+import { useVADStore } from '@/stores/vad'
 import { storeToRefs } from 'pinia'
 const homeStore = useHomeStore()
+const vadStore = useVADStore()
 const { audioQueue, wsStatus, buttonStates } = storeToRefs(homeStore)
-const { getAudioContext } = homeStore
+const { getAudioContext } = vadStore
 const illustrationRef = ref(null)
 
 // 音频分析器

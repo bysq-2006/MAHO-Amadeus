@@ -18,6 +18,7 @@
 <script setup lang="js">
 import meswinName from './meswinName.vue';
 import { useHomeStore } from '@/stores/home';
+import { useVADStore } from '@/stores/vad';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import CenterRevealMask from '../../component/CenterRevealMask.vue'
@@ -28,6 +29,7 @@ import meswinImg from '@/assets/meswin/meswin.png'
 import ringImg from '@/assets/sprite/ring.png'
 
 const homeStore = useHomeStore()
+const vadStore = useVADStore()
 const { textQueue, isWaiting, currentName } = storeToRefs(homeStore)
 const { send } = homeStore
 const showMask = ref(false)
@@ -95,7 +97,7 @@ const handleKeyDown = (e) => {
 }
 
 onMounted(() => {
-  homeStore.initVAD()
+  vadStore.initVAD()
 
 
   window.addEventListener('keydown', handleKeyDown);
