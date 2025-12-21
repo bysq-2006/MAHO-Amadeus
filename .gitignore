@@ -22,6 +22,7 @@ build/
 *.spec
 backend/models/*
 !backend/models/.gitkeep
+backend/data/config.yaml
 
 # -------------------
 # Node / Frontend (Global safeguards)

@@ -7,7 +7,7 @@ export const useHomeStore = defineStore('home', () => {
   // 队列1：字符流（type: 'text'）
   const textQueue = ref<string[]>([])
   const audioQueue = ref<{ data: string, is_final: boolean }[]>([])
-  const isWaiting = ref(true)
+  const isWaiting = ref(false)
   const wsStatus = ref('closed')
   
   // 按钮状态

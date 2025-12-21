@@ -12,17 +12,19 @@
         :height="spriteSize" :totalFrames="60" :loop="0"
         :style="{ position: 'absolute', left: caretX + 'px', top: caretY + 'px', pointerEvents: 'none', zIndex: 9999 }" />
     </CenterRevealMask>
+    <SiriWave :visible="showSiriWave" class="Siri-wave"/>
   </div>
 </template>
 
 <script setup lang="js">
-import meswinName from './meswinName.vue';
 import { useHomeStore } from '@/stores/home';
 import { useVADStore } from '@/stores/vad';
 import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import CenterRevealMask from '../../component/CenterRevealMask.vue'
-import SpritePlayer from '../../component/SpritePlayer.vue'
+import CenterRevealMask from '@/component/CenterRevealMask.vue'
+import SpritePlayer from '@/component/SpritePlayer.vue'
+import meswinName from './meswinName.vue';
+import SiriWave from './SiriWave.vue'
 // @ts-ignore
 import getCaretCoordinates from 'textarea-caret';
 import meswinImg from '@/assets/meswin/meswin.png'
@@ -30,9 +32,10 @@ import ringImg from '@/assets/sprite/ring.png'
 
 const homeStore = useHomeStore()
 const vadStore = useVADStore()
-const { textQueue, isWaiting, currentName } = storeToRefs(homeStore)
+const { textQueue, isWaiting, currentName, buttonStates } = storeToRefs(homeStore)
 const { send } = homeStore
 const showMask = ref(false)
+const showSiriWave = ref(false)
 
 const dialogText = ref('');
 const caretX = ref(0)
@@ -75,23 +78,12 @@ async function processTextQueue() {
   }
 }
 
-// 打开和关闭遮罩，打开的时候等800ms是因为精灵图加载会卡顿，影响遮罩动画
-function openMask() {
-  showMask.value = true
-  isWaiting.value = false
-}
-
-function closeMask() {
-  showMask.value = false
-  isWaiting.value = true
-}
-
 const handleKeyDown = (e) => {
   if (e.key.toLowerCase() === 'h' && e.shiftKey) {
     if (showMask.value) {
-      closeMask();
+      showMask.value = false;
     } else {
-      openMask();
+      showMask.value = true;
     }
   }
 }
@@ -99,11 +91,24 @@ const handleKeyDown = (e) => {
 onMounted(() => {
   vadStore.initVAD()
 
+  vadStore.onVoiceStart = () => {
+    if (buttonStates.value.video) {
+      showMask.value = false
+      showSiriWave.value = true
+    }
+  }
+
+  vadStore.onVoiceEnd = () => {
+    if (buttonStates.value.video) {
+      showMask.value = true
+      showSiriWave.value = false
+    }
+  }
 
   window.addEventListener('keydown', handleKeyDown);
   processTextQueue();
   setTimeout(() => {
-    openMask()
+    showMask.value = true
     updateCaret()
   }, 1000)
 })

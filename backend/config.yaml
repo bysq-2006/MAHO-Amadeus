@@ -5,7 +5,7 @@ llm:
     base_url: "http://localhost:11434"
   openai_api:
     # 示例：使用阿里云 DashScope (Qwen) 的 OpenAI 兼容接口
-    api_key: "sk-11fec913c5044b168c9ce228ac4378ee" 
+    api_key: "YOUR_API_KEY" 
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     model: "qwen-plus"
     timeout: 60
@@ -33,8 +33,8 @@ tts:
 translator:
   select: baidu_api
   baidu_api:
-    appid: "20251129002508470"
-    appkey: "0zK0AZwp2hCmbiOoAtCI"
+    appid: "YOUR_APP_ID"
+    appkey: "YOUR_APP_KEY"
   argos_api: # 本地部署的argos翻译服务，第一次使用需要先联网下载模型
     to_lang: "ja"  # 目标语言，默认日语
   ollama_translator: # 本地 Ollama LLM 翻译服务，使用小参数量模型追求速度
@@ -48,6 +48,6 @@ translator:
 asr:
   select: xfyun_asr
   xfyun_asr:
-    app_id: "a669ec7e"
-    api_key: "5b1cbc7bb2b32137517ec9f61e536497"
-    api_secret: "NTc1OTQyYTQ3MTVmOGM4MTE2MmI3MDVm"
+    app_id: "YOUR_APP_ID"
+    api_key: "YOUR_API_KEY"
+    api_secret: "YOUR_API_SECRET"

@@ -37,7 +37,7 @@ async def process_char_queue(Amadeus, websocket):
     """
     buffer = ""
     # 定义结束标点符号，用于断句
-    sentence_endings = re.compile(r'[，,。！？.!?\n]+')
+    sentence_endings = re.compile(r'[。！？.!?\n]+')
 
     while True:
         try:

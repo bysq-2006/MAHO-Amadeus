@@ -16,7 +16,7 @@
 
 <script setup>
 import illustration from './illustration.vue'
-import dialogBox from './dialogBox.vue'
+import dialogBox from './dialogBox/dialogBox.vue'
 import { onMounted, ref } from 'vue'
 import { useHomeStore } from '@/stores/home'
 import { useVADStore } from '@/stores/vad'
