@@ -4,6 +4,7 @@ from starlette.websockets import WebSocketDisconnect
 import logging
 import asyncio
 import json
+import base64
 from pathlib import Path
 import sys
 
@@ -25,7 +26,7 @@ class WSHandler():
         """
         中断当前的聊天逻辑：取消 LLM 任务，清空队列，发送结束信号
         """
-        # 1. 断开/取消 LLM 任务
+        # 断开/取消 LLM 任务
         if self.current_chat_task and not self.current_chat_task.done():
             self.current_chat_task.cancel()
             try:
@@ -37,7 +38,7 @@ class WSHandler():
             finally:
                 self.current_chat_task = None
 
-        # 2. 清空两个队列
+        # 清空两个队列
         # 清空消息队列 (字符流)
         while not Amadeus.message_queue.empty():
             try:
@@ -54,7 +55,7 @@ class WSHandler():
             except asyncio.QueueEmpty:
                 break
 
-        # 3. 发送结束标签
+        # 发送结束标签
         await websocket.send_text(json.dumps({"type": "end"}))
         logging.info("已中断当前对话并清空队列")
 
@@ -71,11 +72,19 @@ class WSHandler():
         sentence_task = asyncio.create_task(
             process_sentence_queue(Amadeus, websocket))
 
+        # 定义 ASR 结果回调：直接触发聊天
+        async def on_asr_result(text):
+            logging.info(f"ASR 识别结果回调: {text}")
+            self.current_chat_task = asyncio.create_task(
+                handle_chat(websocket, Amadeus, text))
+
+        # 初始化 ASR 连接
+        await Amadeus.asr.start(on_asr_result)
+
         try:
             while True:
                 data = await websocket.receive_text()
                 msg = json.loads(data)
-                logging.info(f"收到消息: {msg}")
 
                 if msg.get("type") == "chat":
                     token = msg.get("token")
@@ -99,12 +108,18 @@ class WSHandler():
                         continue
                     
                     audio_data = msg.get("data")
-                    logging.info(f"收到音频数据，长度: {len(audio_data) if audio_data else 0}")
-                    # 简单输出到屏幕
-                    print(f"\n[Audio Received] Length: {len(audio_data) if audio_data else 0}")
+                    is_final = msg.get("is_final", False)
+                    
                     if audio_data:
-                        print(f"Data Preview: {audio_data[:50]}...")
-                    print("-" * 30)
+                        try:
+                            # 解码并直接发送给 ASR
+                            chunk = base64.b64decode(audio_data)
+                            await Amadeus.asr.send_audio(chunk)
+                        except Exception as e:
+                            logging.error(f"音频处理失败: {e}")
+
+                    if is_final:
+                        await Amadeus.asr.finish_audio()
         except WebSocketDisconnect:
             logging.info("WebSocket 已断开")
         finally:

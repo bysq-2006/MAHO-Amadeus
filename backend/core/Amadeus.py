@@ -20,8 +20,8 @@ class BaseAmadeus:
         self.translator = Translator(self.config.get("translator", {}))
         self.asr = ASR(self.config.get("asr", {}))
 
-        self.message_queue = asyncio.Queue()  # 使用 asyncio.Queue 以支持异步操作
-        self.sentence_queue = asyncio.Queue()  # 句子队列，用于 TTS 处理
+        self.message_queue = asyncio.Queue()  # 字符队列
+        self.sentence_queue = asyncio.Queue()  # 句子队列
         self.user = {}  # 用户信息
         self.context_window = []  # 上下文窗口
         self.context_window_index = 0  # 上下文窗口索引，每次前端获取上下文窗口就更新这个索引

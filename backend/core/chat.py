@@ -44,7 +44,8 @@ async def process_char_queue(Amadeus, websocket):
             char = await Amadeus.message_queue.get()
 
             # 筛选掉没用的字符
-            if not char or char in ["<think>", "</think>"]:
+            unwanted_chars = ["<think>", "</think>", "<thinking>", "</thinking>", "\n", "\t", " ", "\r"]
+            if not char or char.strip() == "" or char in unwanted_chars:
                 Amadeus.message_queue.task_done()
                 continue
 

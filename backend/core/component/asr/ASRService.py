@@ -3,12 +3,9 @@ import importlib
 
 class ASR:
     """
-        ASR 服务类，对于不同的组件和BaseAmadeus提供的一个中间层。
-        所有的组件必须实现一个类Client:
-        class Client:
-            async def transcribe(self, audio_input: str | bytes) -> str:
-                ...
-        transcribe方法用于将音频输入（URL或字节流）转换为文本。
+    ASR 服务类，作为不同 ASR 组件和 BaseAmadeus 之间的中间层。
+    目前只写了根据流式连接相关的逻辑
+    具体要实现的功能参考讯飞的话。这里有点难写。
     """
     def __init__(self, config: dict) -> None:
         # 1. 获取配置中的模块名

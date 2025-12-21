@@ -14,10 +14,10 @@ tts:
   select: genie_tts_service  # 可选: gpt_sovits_api 或 genie_tts_service
   # Genie TTS 配置（轻量化 ONNX 推理）
   genie_tts_service:
-    character_name: "maho" # 随便起什么名字都行，主要是为了区分不同角色
+    character_name: "maho" # 随便起什么名字都行
     onnx_model_dir: "backend/models/TTS-maho"
     genie_data_dir: "backend/models/GenieData"
-    language: "ja"                            # ja/zh/en
+    language: "ja" # ja/zh/en
     reference_audio_path: "backend/data/TTS-audio/激动.wav"
     reference_audio_text: "あら、あなた。"
     auto_load: true
@@ -46,9 +46,8 @@ translator:
     model: "gpt-3.5-turbo"
 
 asr:
-  select: dobao_api
-  dobao_api:
-    api_key: "b2178a43-fe94-4ead-a5cf-c0e53ffa3380"
-    model_name: "bigmodel"
-    resource_id: "volc.seedasr.auc"
-
+  select: xfyun_asr
+  xfyun_asr:
+    app_id: "a669ec7e"
+    api_key: "5b1cbc7bb2b32137517ec9f61e536497"
+    api_secret: "NTc1OTQyYTQ3MTVmOGM4MTE2MmI3MDVm"
