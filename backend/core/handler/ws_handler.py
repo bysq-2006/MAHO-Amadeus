@@ -61,7 +61,9 @@ class WSHandler():
 
     async def handle_ws(self, websocket, Amadeus):
         """
-        最主要的 WebSocket 处理逻辑
+        这里主要是接收数据，发送消息是通过队列异步完成的，就是下面的两个任务
+        1. process_char_queue 负责从 Amadeus.message_queue 读取字符流并发送给前端
+        2. process_sentence_queue 负责从 Amadeus.sentence_queue 读取句子 TTS 并发送给前端
         """
         await websocket.accept()  # 必须先接受连接
         logging.info("WebSocket 连接已接受")

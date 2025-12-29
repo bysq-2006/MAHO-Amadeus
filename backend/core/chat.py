@@ -36,6 +36,7 @@ async def process_char_queue(Amadeus, websocket):
     处理字符队列：发送字符流 -> 组合成句子 -> 放入句子队列
     """
     buffer = ""
+    is_thinking = False
     # 定义结束标点符号，用于断句
     sentence_endings = re.compile(r'[。！？.!?\n]+')
 
@@ -43,23 +44,33 @@ async def process_char_queue(Amadeus, websocket):
         try:
             char = await Amadeus.message_queue.get()
 
+            if "<think>" in char:
+                is_thinking = True
+                char = char.replace("<think>", "")
+            if "</think>" in char:
+                is_thinking = False
+                char = char.replace("</think>", "")
+
             # 筛选掉没用的字符
-            unwanted_chars = ["<think>", "</think>", "<thinking>", "</thinking>", "\n", "\t", " ", "\r"]
+            unwanted_chars = ["\n", "\t", " ", "\r"]
             if not char or char.strip() == "" or char in unwanted_chars:
                 Amadeus.message_queue.task_done()
                 continue
 
             # 发送字符流（带标签）
-            await websocket.send_text(json.dumps({"type": "text", "data": char}))
-            buffer += char
+            msg_type = "thinkText" if is_thinking else "text"
+            await websocket.send_text(json.dumps({"type": msg_type, "data": char}))
 
-            # 检查是否形成完整句子
-            if sentence_endings.search(char):
-                sentence = buffer.strip()
-                if sentence:
-                    # 将完整句子放入句子队列，供 TTS 处理
-                    await Amadeus.sentence_queue.put(sentence)
-                buffer = ""  # 清空缓冲区
+            if not is_thinking:
+                buffer += char
+
+                # 检查是否形成完整句子
+                if sentence_endings.search(char):
+                    sentence = buffer.strip()
+                    if sentence:
+                        # 将完整句子放入句子队列，供 TTS 处理
+                        await Amadeus.sentence_queue.put(sentence)
+                    buffer = ""  # 清空缓冲区
 
             Amadeus.message_queue.task_done()
 

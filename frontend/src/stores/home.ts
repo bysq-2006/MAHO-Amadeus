@@ -6,6 +6,7 @@ import { MahoWebSocket } from '../api/ws'
 export const useHomeStore = defineStore('home', () => {
   // 队列1：字符流（type: 'text'）
   const textQueue = ref<string[]>([])
+  const thinkText = ref('')
   const audioQueue = ref<{ data: string, is_final: boolean }[]>([])
   const isWaiting = ref(false)
   const wsStatus = ref('closed')
@@ -30,7 +31,14 @@ export const useHomeStore = defineStore('home', () => {
     wsStatus.value = 'closed'
   })
 
+  wsClient.on('thinkText', (msg: any) => {
+    thinkText.value += msg.data
+  })
+
   wsClient.on('text', (msg: any) => {
+    if (thinkText.value) {
+      thinkText.value = ''
+    }
     textQueue.value.push(msg.data)
   })
 
@@ -43,6 +51,7 @@ export const useHomeStore = defineStore('home', () => {
 
   wsClient.on('start', () => {
     textQueue.value = []
+    thinkText.value = ''
     isWaiting.value = true
     currentName.value = amadeusName.value
   })
@@ -58,6 +67,7 @@ export const useHomeStore = defineStore('home', () => {
 
   return {
     textQueue,
+    thinkText,
     audioQueue,
     isWaiting,
     wsStatus,

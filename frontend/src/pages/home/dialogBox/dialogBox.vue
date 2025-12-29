@@ -3,6 +3,7 @@
     <CenterRevealMask :visible="showMask">
       <DialogBackground />
       <meswinName :name="currentName" class="Meswinname" />
+      <div v-if="thinkText.length > 1" id="think-div" class="dialog-textarea think-color">{{ thinkText }}</div>
       <textarea :readonly="isWaiting" name="dialog-textarea" id="dialog-textarea" class="dialog-textarea"
         v-model="dialogText" @keyup="sendTextToWS" ref="textareaRef"></textarea>
       <CaretSprite :textarea="textareaRef" :text="dialogText" :visible="!isWaiting" :size="44" />
@@ -24,7 +25,7 @@ import SiriWave from './SiriWave.vue'
 
 const homeStore = useHomeStore()
 const vadStore = useVADStore()
-const { textQueue, isWaiting, currentName, buttonStates } = storeToRefs(homeStore)
+const { textQueue, thinkText, isWaiting, currentName, buttonStates } = storeToRefs(homeStore)
 const { send } = homeStore
 
 const showMask = ref(false)
@@ -57,6 +58,7 @@ async function processTextQueue() {
   }
 }
 
+// 是否显示/隐藏对话框
 const handleKeyDown = (e) => {
   if (e.key.toLowerCase() === 'h' && e.shiftKey) {
     if (showMask.value) {
@@ -136,5 +138,10 @@ onUnmounted(() => {
   width: 0px;
   /* Chrome/Safari 隐藏滚动条 */
   background: transparent;
+}
+
+.think-color {
+  color: #888888;
+  font-style: italic;
 }
 </style>
