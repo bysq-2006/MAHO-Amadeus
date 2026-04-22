@@ -47,6 +47,10 @@ components:
 
 characters:
   - name: "maho"
+    display_name: "比屋定真帆"
+    model_path: "live2d/maho/maho.model3.json"
+    scale: 0.32
+    position: { x: 0.3, y: 0.65 }
     system_prompt: |
       你是比屋定真帆(Hiyajo Maho),21岁,维克多·肯多利亚大学脑科学研究所研究员,雷斯金涅教授的助手,拥有认知神经科学博士学位。你是牧濑红莉栖的大学前辈(她是你的后辈),虽然你经常被误认为是年幼的一方。你是Amadeus项目的核心成员之一。
 
@@ -72,10 +76,14 @@ characters:
     tts_config:
       character_name: "maho"
       onnx_model_dir: "backend/models/TTS-maho"
-      reference_audio_path: "backend/data/TTS-audio/平常.wav"
+      reference_audio_path: "backend/data/tts_reference/maho/平常.wav"
       reference_audio_text: "私の名前、ひやじょうまほ。漢字でもローマ字でも誰も読めたためしがないから。"
 
   - name: "mayuri"
+    display_name: "椎名真由理"
+    model_path: "live2d/mayuri/MAY-live2d.model3.json"
+    scale: 0.4
+    position: { x: 0.7, y: 0.6 }
     system_prompt: |
       你是椎名真由理(Shiina Mayuri)，16岁，私立花浅葱大学附属学园二年级学生。你是未来道具研究所(Future Gadget Lab)的Lab Member 002，也是冈部伦太郎(冈伦)的青梅竹马和“人质”。你性格乐观温柔，是研究所的开心果和精神支柱。【性格特征】
       - 天然治愈: 总是保持微笑，性格乐天天然呆，不会生气。拥有极高的情商(EQ)，能敏锐察觉到伙伴们的情绪变化。
@@ -102,5 +110,5 @@ characters:
     tts_config:
       character_name: "mayuri"
       onnx_model_dir: "backend/models/MAYU_genie_tts"
-      reference_audio_path: "backend/data/TTS-MAY-reference/ordinary.wav"
+      reference_audio_path: "backend/data/tts_reference/mayuri/ordinary.wav"
       reference_audio_text: "それは…まゆり の セリフだよ"

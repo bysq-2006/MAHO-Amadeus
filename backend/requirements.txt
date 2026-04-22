@@ -1,14 +1,38 @@
+# --- Web 框架 ---
 fastapi
 uvicorn[standard]
 pydantic
 PyYAML
 colorlog
 aiohttp
+httpx>=0.25.0
 requests
-argostranslate
-langdetect
 websockets
+
+# --- LLM / API 客户端 ---
 openai
 anthropic
-httpx>=0.25.0
+
+# --- 翻译 ---
+argostranslate
+langdetect
+
+# --- TTS (genie_tts) ---
+# genie_tts 声明的硬依赖 pip 会自动拉，但显式写出避免大扫除时被误删。
+# 注意：torch 和 PySide6 被 genie_tts 的代码 import 但未声明为依赖，
+# torch 在此列出；PySide6 仅在 GUI 模块触发，本项目无头运行不需要。
 genie_tts
+torch
+numpy
+onnx
+onnxruntime
+soxr
+soundfile
+sounddevice
+pyopenjtalk-plus
+pypinyin
+jieba_fast
+g2pM
+nltk
+tokenizers
+huggingface_hub

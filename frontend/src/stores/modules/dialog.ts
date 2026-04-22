@@ -17,8 +17,7 @@ export const useDialogStore = defineStore('dialog', () => {
   const onInputSubmit = (text: string) => {
     wsStore.send({
       type: 'chat',
-      data: text,
-      token: localStorage.getItem('token')
+      data: text
     })
     dialogText.value = '' // 发送后立即清空
   }

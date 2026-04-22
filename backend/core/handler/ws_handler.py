@@ -23,13 +23,14 @@ class WSHandler():
         self.auth_manager = AuthManager()  # 用于验证 WebSocket 消息中的 token
         self.orchestrator_task = None      # 演出编排任务
         self.characters = {}               # 存储当前连接的所有角色实例
+        self.char_configs = []             # 原始角色配置（含展示字段，供前端 get_stage 使用）
         self.director = None               # 导演实例
 
     def init_characters(self, components):
         """初始化角色列表"""
-        char_configs = components.config.get("characters", [])
-        
-        if not char_configs:
+        self.char_configs = components.config.get("characters", [])
+
+        if not self.char_configs:
             # 如果没有配置角色，使用默认配置创建一个默认角色
             logging.warning("未在配置中找到角色定义，使用默认角色")
             default_config = {
@@ -38,10 +39,28 @@ class WSHandler():
             }
             self.characters["maho"] = Character("maho", default_config, components)
         else:
-            for conf in char_configs:
+            for conf in self.char_configs:
                 name = conf.get("name")
                 if name:
                     self.characters[name] = Character(name, conf, components)
+
+    async def _handle_get_stage(self, websocket):
+        """返回舞台配置（角色展示信息），供前端初始化渲染"""
+        characters = [
+            {
+                "id": conf.get("name"),
+                "displayName": conf.get("display_name", conf.get("name")),
+                "modelPath": conf.get("model_path"),
+                "scale": conf.get("scale"),
+                "position": conf.get("position"),
+            }
+            for conf in self.char_configs
+            if conf.get("name") and conf.get("model_path")
+        ]
+        await websocket.send_text(json.dumps({
+            "type": "stage",
+            "characters": characters,
+        }))
 
     def _validate_token(self, msg):
         """验证消息中的 token"""
@@ -136,6 +155,9 @@ class WSHandler():
                 
                 elif msg_type == "interrupt":
                     await self.interrupt_chat(websocket)
+
+                elif msg_type == "get_stage":
+                    await self._handle_get_stage(websocket)
 
         except WebSocketDisconnect:
             logging.info("WebSocket 已断开")

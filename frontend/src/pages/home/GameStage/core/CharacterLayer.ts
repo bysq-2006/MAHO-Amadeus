@@ -50,12 +50,6 @@ export class CharacterLayer {
         y: config.position?.y ?? 0.65,
         scale: config.scale ?? 0.4
       }, screen)
-
-      // 同步嘴巴张开幅度
-      if (typeof config.mouthOpen === 'number') {
-        const PARAM_MOUTH_OPEN_Y = 'ParamMouthOpenY'
-        model.internalModel.coreModel.setParameterValueById(PARAM_MOUTH_OPEN_Y, config.mouthOpen)
-      }
     }
   }
 
@@ -73,42 +67,28 @@ export class CharacterLayer {
   }
 
   private startBlinking(model: any) {
-    const PARAM_EYE_L_OPEN = 'ParamEyeROpen'
-    const PARAM_EYE_R_OPEN = 'ParamEyeROpen2'
-    
     const coreModel = model.internalModel.coreModel
-    const paramIds = coreModel._parameterIds
-    const params = coreModel._model.parameters.values
-    
-    const leftIdx = paramIds.indexOf(PARAM_EYE_L_OPEN)
-    const rightIdx = paramIds.indexOf(PARAM_EYE_R_OPEN) || paramIds.indexOf(PARAM_EYE_R_OPEN + '2')
-
-    if (leftIdx === -1) return
+    const setEye = (val: number) => {
+      coreModel.setParameterValueById('ParamEyeLOpen', val)
+      coreModel.setParameterValueById('ParamEyeROpen', val)
+    }
 
     const blink = () => {
-      const duration = 120
-      const tween = new TWEEN.Tween({ val: params[leftIdx] })
-        .to({ val: 0 }, duration)
+      new TWEEN.Tween({ val: 1 })
+        .to({ val: 0 }, 120)
         .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(obj => {
-          params[leftIdx] = obj.val
-          if (rightIdx !== -1) params[rightIdx] = obj.val
-        })
-        .onComplete(() => {
-          new TWEEN.Tween({ val: 1 })
-            .to({ val: 1 }, duration)
+        .onUpdate(o => setEye(o.val))
+        .chain(
+          new TWEEN.Tween({ val: 0 })
+            .to({ val: 1 }, 120)
             .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(obj => {
-              params[leftIdx] = obj.val
-              if (rightIdx !== -1) params[rightIdx] = obj.val
-            })
-            .start(this.tweenGroup)
-        })
+            .onUpdate(o => setEye(o.val))
+        )
         .start(this.tweenGroup)
 
       setTimeout(blink, Math.random() * 4000 + 2000)
     }
-    
+
     blink()
   }
 }

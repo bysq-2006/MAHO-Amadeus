@@ -104,8 +104,7 @@ export const useVADStore = defineStore('vad', () => {
         wsStore.send({
           type: 'audio',
           data: base64,
-          is_final: false,
-          token: localStorage.getItem('token')
+          is_final: false
         })
       }
       
@@ -130,8 +129,7 @@ export const useVADStore = defineStore('vad', () => {
           wsStore.send({
             type: 'audio',
             data: '',
-            is_final: true,
-            token: localStorage.getItem('token')
+            is_final: true
           })
 
           onVoiceEnd.value?.()

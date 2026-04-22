@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from core.handler.ws_handler import WSHandler
 from core.component.Components import Components
@@ -35,6 +36,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 暴露给前端的静态资源（Live2D 模型、背景图等）
+app.mount("/public", StaticFiles(directory="public"), name="public")
 
 # 实例化认证管理器
 auth_manager = AuthManager()
