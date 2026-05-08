@@ -116,3 +116,9 @@ Modelfile 是用于配置和管理大语言模型（LLM）参数的文件，qwen
 🤝 欢迎 Star、Fork、提交 Issue 或 PR，一起完善 MAHO-Amadeus
 
 ---
+
+## 角色配置
+
+添加新角色、配置立绘（Live2D 或图片）、TTS 音色等详见 [角色配置指南](doc/角色配置指南.md)。
+
+---

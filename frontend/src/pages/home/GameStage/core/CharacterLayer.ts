@@ -6,6 +6,8 @@ import * as TWEEN from '@tweenjs/tween.js'
 export class CharacterLayer {
   public container: PIXI.Container
   private models: Map<string, any> = new Map()
+  private modelTypes: Map<string, 'live2d' | 'sprite'> = new Map()
+  private spriteFrames: Map<string, Map<number, string>> = new Map()
   private tweenGroup: TWEEN.Group
 
   constructor(tweenGroup: TWEEN.Group) {
@@ -14,37 +16,37 @@ export class CharacterLayer {
     this.tweenGroup = tweenGroup
   }
 
-  /**
-   * 同步角色列表
-   */
   public async syncCharacters(configs: CharacterConfig[], Live2DModel: any, screen: { width: number, height: number }) {
     const activeIds = configs.map(c => c.id)
 
-    // 1. 移除不再需要的模型
     for (const [id, model] of this.models.entries()) {
       if (!activeIds.includes(id)) {
         this.container.removeChild(model)
         model.destroy()
         this.models.delete(id)
+        this.modelTypes.delete(id)
+        this.spriteFrames.delete(id)
       }
     }
 
-    // 2. 更新或增加模型
     for (const config of configs) {
       let model = this.models.get(config.id)
 
       if (!model) {
-        // 创建新模型
-        model = await Live2DModel.from(config.modelPath, { autoInteract: true })
-        model.anchor.set(0.5, 0.5)
+        if (config.modelType === 'sprite') {
+          model = PIXI.Sprite.from(this.getClosestFrame(config, 0)!)
+          model.anchor.set(0.5, 0.5)
+          this.spriteFrames.set(config.id, config.spriteFrames ?? new Map())
+        } else {
+          model = await Live2DModel.from(config.modelPath, { autoInteract: false })
+          model.anchor.set(0.5, 0.5)
+          this.startBlinking(model)
+        }
         this.container.addChild(model)
         this.models.set(config.id, model)
-        
-        // 启动眨眼动画
-        this.startBlinking(model)
+        this.modelTypes.set(config.id, config.modelType)
       }
 
-      // 应用变换 (坐标使用归一化 -> 像素转换)
       applyTransform(model, {
         x: config.position?.x ?? 0.5,
         y: config.position?.y ?? 0.65,
@@ -53,17 +55,39 @@ export class CharacterLayer {
     }
   }
 
-  /**
-   * 更新口型同步
-   */
   public updateLipSync(characterId: string | null, value: number) {
     if (!characterId) return
     const model = this.models.get(characterId)
     if (!model) return
 
-    // 常见的 Live2D 嘴巴开口参数名
-    const PARAM_MOUTH_OPEN_Y = 'ParamMouthOpenY'
-    model.internalModel.coreModel.setParameterValueById(PARAM_MOUTH_OPEN_Y, value)
+    const type = this.modelTypes.get(characterId)
+    if (type === 'sprite') {
+      const frames = this.spriteFrames.get(characterId)
+      if (!frames) return
+      const url = this.findClosestUrl(frames, Math.round(value * 100))
+      if (url) model.texture = PIXI.Texture.from(url)
+    } else {
+      model.internalModel.coreModel.setParameterValueById('ParamMouthOpenY', value)
+    }
+  }
+
+  private getClosestFrame(config: CharacterConfig, percent: number): string | undefined {
+    const frames = config.spriteFrames
+    if (!frames || frames.size === 0) return undefined
+    return this.findClosestUrl(frames, percent)
+  }
+
+  private findClosestUrl(frames: Map<number, string>, percent: number): string | undefined {
+    let closestKey = -1
+    let minDiff = Infinity
+    for (const key of frames.keys()) {
+      const diff = Math.abs(key - percent)
+      if (diff < minDiff) {
+        minDiff = diff
+        closestKey = key
+      }
+    }
+    return closestKey >= 0 ? frames.get(closestKey) : undefined
   }
 
   private startBlinking(model: any) {
@@ -74,17 +98,17 @@ export class CharacterLayer {
     }
 
     const blink = () => {
-      new TWEEN.Tween({ val: 1 })
+      const t = new TWEEN.Tween({ val: 1 }, this.tweenGroup)
         .to({ val: 0 }, 120)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(o => setEye(o.val))
         .chain(
-          new TWEEN.Tween({ val: 0 })
+          new TWEEN.Tween({ val: 0 }, this.tweenGroup)
             .to({ val: 1 }, 120)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(o => setEye(o.val))
         )
-        .start(this.tweenGroup)
+      t.start()
 
       setTimeout(blink, Math.random() * 4000 + 2000)
     }

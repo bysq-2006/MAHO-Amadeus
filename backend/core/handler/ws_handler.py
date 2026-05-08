@@ -6,6 +6,7 @@ import logging
 import asyncio
 import json
 import base64
+import os
 from pathlib import Path
 import sys
 
@@ -46,17 +47,34 @@ class WSHandler():
 
     async def _handle_get_stage(self, websocket):
         """返回舞台配置（角色展示信息），供前端初始化渲染"""
-        characters = [
-            {
+        characters = []
+        for conf in self.char_configs:
+            if not conf.get("name"):
+                continue
+
+            model_type = conf.get("model_type", "live2d")
+            char = {
                 "id": conf.get("name"),
                 "displayName": conf.get("display_name", conf.get("name")),
+                "modelType": model_type,
                 "modelPath": conf.get("model_path"),
                 "scale": conf.get("scale"),
                 "position": conf.get("position"),
             }
-            for conf in self.char_configs
-            if conf.get("name") and conf.get("model_path")
-        ]
+
+            if model_type == "sprite":
+                sprite_dir = conf.get("sprite_dir", "")
+                abs_dir = Path("public") / sprite_dir
+                frames = []
+                if abs_dir.is_dir():
+                    frames = [
+                        f for f in os.listdir(abs_dir)
+                        if f.lower().endswith(('.png', '.jpg', '.webp'))
+                    ]
+                char["spriteDir"] = sprite_dir
+                char["spriteFrames"] = frames
+
+            characters.append(char)
         await websocket.send_text(json.dumps({
             "type": "stage",
             "characters": characters,

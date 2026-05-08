@@ -4,7 +4,9 @@ import { ref } from 'vue'
 export interface CharacterConfig {
   id: string
   displayName: string
-  modelPath: string
+  modelType: 'live2d' | 'sprite'
+  modelPath?: string
+  spriteFrames?: Map<number, string>  // key: 口型百分比(0-100), value: 图片完整URL
   scale?: number
   position?: { x: number, y: number }
 }
