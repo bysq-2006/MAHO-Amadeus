@@ -39,7 +39,7 @@ export const usePerformanceStore = defineStore('performance', () => {
     const tailPerformance = computed(() => {
         if (queue.value.length === 0) return null
         const last = queue.value[queue.value.length - 1]
-        if (last.isSegmentComplete) return null
+        if (!last || last.isSegmentComplete) return null
         return last
     })
 

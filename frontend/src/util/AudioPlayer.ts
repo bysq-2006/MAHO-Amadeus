@@ -1,7 +1,7 @@
 export class AudioPlayer {
   private context: AudioContext
   private analyser: AnalyserNode
-  private dataArray: Uint8Array
+  private dataArray: Uint8Array<ArrayBuffer>
   private animationId: number | null = null
 
   constructor(context?: AudioContext) {
@@ -41,7 +41,7 @@ export class AudioPlayer {
         this.analyser.getByteFrequencyData(this.dataArray)
         let sum = 0
         for (let i = 0; i < this.dataArray.length; i++) {
-          sum += this.dataArray[i]
+          sum += this.dataArray[i] ?? 0
         }
         const average = sum / this.dataArray.length
         

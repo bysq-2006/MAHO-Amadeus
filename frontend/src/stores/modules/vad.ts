@@ -89,7 +89,7 @@ export const useVADStore = defineStore('vad', () => {
         // 转换为 16-bit PCM
         const pcmData = new Int16Array(inputData.length)
         for (let i = 0; i < inputData.length; i++) {
-          const s = Math.max(-1, Math.min(1, inputData[i]))
+          const s = Math.max(-1, Math.min(1, inputData[i] ?? 0))
           pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF
         }
 
@@ -97,7 +97,7 @@ export const useVADStore = defineStore('vad', () => {
         const uint8Array = new Uint8Array(pcmData.buffer)
         let binary = ''
         for (let i = 0; i < uint8Array.byteLength; i++) {
-          binary += String.fromCharCode(uint8Array[i])
+          binary += String.fromCharCode(uint8Array[i] ?? 0)
         }
         const base64 = btoa(binary)
 

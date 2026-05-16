@@ -35,4 +35,4 @@ jieba_fast
 g2pM
 nltk
 tokenizers
-huggingface_hub
+huggingface_hub<1.0
