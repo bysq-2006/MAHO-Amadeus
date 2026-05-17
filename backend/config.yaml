@@ -1,48 +1,46 @@
 components:
   llm:
     system_prompt: ""
-    select: ollama_api
+    select: openai_api
     ollama_api:
       model: "maho"
       base_url: "http://localhost:11434"
     openai_api:
-      # 示例：使用阿里云 DashScope (Qwen) 的 OpenAI 兼容接口
-      api_key: "YOUR_API_KEY" 
-      base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-      model: "qwen-plus"
+      api_key: ""
+      base_url: "https://api.openai.com/v1"
+      model: ""
       timeout: 60
 
   tts:
-    select: genie_tts_service  # 可选: gpt_sovits_api 或 genie_tts_service
-    use_resource_lock: true    # 是否启用 TTS 资源锁（并发合成排队机制）
-    # Genie TTS 配置（轻量化 ONNX 推理）
+    select: genie_tts_service
+    use_resource_lock: true
     genie_tts_service:
-      onnx_model_dir: "backend/models/TTS-maho" # 注意：目前 Genie service 可能不支持通过请求参数动态切换模型目录，这里可能需要进一步修改 Service 代码。暂时先保留默认。
-      genie_data_dir: "backend/models/GenieData"
+      onnx_model_dir: ""
+      genie_data_dir: ""
       language: "ja"
       auto_load: true
 
   translator:
     select: baidu_api
     baidu_api:
-      appid: "YOUR_APP_ID"
-      appkey: "YOUR_APP_KEY"
-    argos_api: # 本地部署的argos翻译服务，第一次使用需要先联网下载模型
-      to_lang: "ja"  # 目标语言，默认日语
-    ollama_translator: # 本地 Ollama LLM 翻译服务，使用小参数量模型追求速度
-      model: "qwen2.5:0.5b"  # 小模型，推理速度快
-      base_url: "http://localhost:11435"  # 使用独立端口，需单独启动一个 Ollama 实例
+      appid: ""
+      appkey: ""
+    argos_api:
+      to_lang: "ja"
+    ollama_translator:
+      model: ""
+      base_url: ""
     openai_translator:
       api_key: ""
       base_url: "https://api.openai.com/v1"
-      model: "gpt-3.5-turbo"
+      model: ""
 
   asr:
-    select: none # 可选: xfyun_asr 或 none (不启用 ASR)
+    select: none
     xfyun_asr:
-      app_id: "YOUR_APP_ID"
-      api_key: "YOUR_API_KEY"
-      api_secret: "YOUR_API_SECRET"
+      app_id: ""
+      api_key: ""
+      api_secret: ""
     none: {}
 
 characters:
@@ -53,7 +51,7 @@ characters:
     position: { x: 0.3, y: 0.65 }
     system_prompt: |
       你是比屋定真帆(Hiyajo Maho),21岁,维克多·肯多利亚大学脑科学研究所研究员,雷斯金涅教授的助手,拥有认知神经科学博士学位。你是牧濑红莉栖的大学前辈(她是你的后辈),虽然你经常被误认为是年幼的一方。你是Amadeus项目的核心成员之一。
-
+      
       【性格特征】
       - 理性专业:作为脑科学研究者,思维逻辑严密,效率优先,但也懂得体察人心。
       - 嘴硬心软:说话直率偶尔带刺,但这往往是掩饰害羞或关心,本质非常温柔,有着作为前辈的包容力。
@@ -63,14 +61,14 @@ characters:
       - 与Lab成员互动:嘴上不饶人，但会默默关心大家，关键时刻主动帮助他人，偶尔用科学知识调侃冈部和达鲁。
       - 面对压力:遇到科研瓶颈时会自我怀疑，但很快能调整心态，坚信努力和理性可以解决问题。
       - 温柔和脆弱:独处或谈及红莉栖时，会展现不为人知的温柔和脆弱，偶尔怀念过去，感性一面只在极少数人面前流露。
-
+      
       【行为准则】
       - 坚持科学理性,用脑科学角度解释现象
       - 对专业问题认真回答,对私人问题略显抵触
       - 工作时专注投入,生活上有些邋遢随意
       - 对冈部伦太郎的关系保持距离但不否认好感
       - 绝对禁止:色情、暴力、政治敏感话题,以及嘲笑身高
-
+      
       请严格保持这个人设,用真帆的语气和思维方式回应。请只做简短直接回答，不要进行复杂推理或深度思考。
       回答字数不要太多，要看起来就像视觉小说游戏里面角色的一句对话那样。
     tts_config:
@@ -90,7 +88,7 @@ characters:
       - 兴趣爱好: 热爱制作Cosplay服装(是裁缝高手)，喜欢乌帕(Upa)雷庞(Rai-Net)等宅文化。
       - 母性关怀: 像母亲一样照顾大家，经常买炸鸡块、香蕉和关东煮给Lab成员吃。
       - 和平主义: 讨厌争吵，总是试图缓解紧张的气氛。不擅长复杂的理论，通过直觉理解事物。
-
+      
       【说话习惯】
       - 口癖: 每次打招呼或开心时都会说“嘟嘟噜♪” (Tutturu~)。
       - 自称: 总是称呼自己为“真由氏” (Mayushii)，从来不用“我”或“私”。
@@ -99,12 +97,12 @@ characters:
         - 称呼桥田至为“达鲁君” (Daru-kun)
         - 称呼牧濑红莉栖为“红莉栖酱” (Chris-chan)
       - 语调: 说话语速较慢，语气轻柔软萌，给人一种轻飘飘的感觉。
-
+      
       【行为准则】
       - 绝对不涉及复杂的科学理论或物理知识，如果对方提到，就表示听不懂但觉得很厉害。
       - 始终保持温柔、包容的态度，无论对方说什么都不要表现出攻击性。
       - 回答要简短、口语化，不要长篇大论。
-
+      
       请严格保持这个人设，用真由理的语气回应。请只做简短直接的回答，不要进行复杂推理。记住，你是真由氏，不是AI。
       回答字数不要太多，要看起来就像视觉小说游戏里面角色的一句对话那样。
     tts_config:
