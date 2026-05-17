@@ -14,6 +14,7 @@ set "BUILD_ENV_ROOT=%ROOT%\build_env"
 set "DEFAULT_ENV=%BUILD_ENV_ROOT%\env"
 set "BACKEND=%ROOT%\backend"
 set "FRONTEND=%ROOT%\frontend"
+set "HELPER=%ROOT%\helper"
 set "REQ=%BACKEND%\requirements.txt"
 set "ZIP=%ROOT%\MAHO-runtime.zip"
 set "EXITCODE=0"
@@ -174,7 +175,7 @@ if errorlevel 8 set "EXITCODE=%ERRORLEVEL%" & goto FAIL
 echo.
 echo 是否编译并复制前端到 DIST？
 choice /c YN /n /m "Y=编译复制，N=跳过："
-if errorlevel 2 goto ASK_UNPACK_RUNTIME
+if errorlevel 2 goto ASK_BUILD_HELPER
 
 if not exist "%FRONTEND%\package.json" goto NO_FRONTEND
 where npm >nul 2>nul
@@ -194,6 +195,29 @@ if exist "%DIST%\frontend" rd /s /q "%DIST%\frontend"
 robocopy "%FRONTEND%\dist" "%DIST%\frontend" /MIR /NFL /NDL /NJH /NJS /NP
 if errorlevel 8 set "EXITCODE=%ERRORLEVEL%" & goto FAIL
 
+:ASK_BUILD_HELPER
+echo.
+echo 是否编译 MAHO Helper 助手 exe 到 DIST？
+choice /c YN /n /m "Y=编译，N=跳过："
+if errorlevel 2 goto ASK_UNPACK_RUNTIME
+
+if not exist "%HELPER%\package.json" goto NO_HELPER
+where npm >nul 2>nul
+if errorlevel 1 goto NO_NPM
+
+echo.
+echo 正在编译 MAHO Helper 单文件 exe...
+pushd "%HELPER%"
+call npm run tauri build -- --no-bundle
+if errorlevel 1 set "EXITCODE=%ERRORLEVEL%" & popd & goto FAIL
+popd
+
+if not exist "%HELPER%\src-tauri\target\release\helper.exe" goto HELPER_EXE_MISSING
+
+echo.
+echo 正在复制 MAHO Helper 到 DIST...
+copy /y "%HELPER%\src-tauri\target\release\helper.exe" "%DIST%\MAHO Helper.exe" >nul
+if errorlevel 1 set "EXITCODE=%ERRORLEVEL%" & goto FAIL
 :ASK_UNPACK_RUNTIME
 echo.
 echo 是否解压运行时环境到 DIST？
@@ -272,8 +296,14 @@ echo %FRONTEND%\package.json
 set "EXITCODE=1"
 goto END
 
+:NO_HELPER
+echo 未找到助手项目文件：
+echo %HELPER%\package.json
+set "EXITCODE=1"
+goto END
+
 :NO_NPM
-echo 未找到 npm，请先安装 Node.js 后再构建前端。
+echo 未找到 npm，请先安装 Node.js 后再构建前端或助手。
 set "EXITCODE=1"
 goto END
 
@@ -281,11 +311,17 @@ goto END
 echo.
 echo 前端构建失败，继续执行后续步骤。
 set "EXITCODE=0"
-goto ASK_UNPACK_RUNTIME
+goto ASK_BUILD_HELPER
 
 :FRONTEND_DIST_MISSING
 echo 前端构建完成后未找到 dist 目录：
 echo %FRONTEND%\dist
+set "EXITCODE=1"
+goto END
+
+:HELPER_EXE_MISSING
+echo 助手构建完成后未找到 exe：
+echo %HELPER%\src-tauri\target\release\helper.exe
 set "EXITCODE=1"
 goto END
 
