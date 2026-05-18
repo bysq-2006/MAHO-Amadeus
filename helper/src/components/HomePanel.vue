@@ -42,7 +42,7 @@ defineEmits<{
         <div class="section-title">
           <h2>配置文件路径</h2>
           <button class="primary" type="button" :disabled="loadingConfig" @click="$emit('loadConfigPath')">
-            {{ loadingConfig ? "加载中" : "加载配置" }}
+            {{ loadingConfig ? "加载中" : "选择路径" }}
           </button>
         </div>
         <label>

@@ -10,7 +10,7 @@ defineProps<{ form: ConfigForm }>();
       <span class="section-icon">L</span>
       <div>
         <h1>LLM</h1>
-        <p>模型提供方、接口地址和全局提示词</p>
+        <p>模型提供方和接口地址</p>
       </div>
     </div>
 
@@ -23,11 +23,6 @@ defineProps<{ form: ConfigForm }>();
             <option value="openai_api">OpenAI 兼容</option>
           </select>
         </div>
-
-        <label>
-          <span>全局 System Prompt</span>
-          <textarea v-model="form.llmSystemPrompt" rows="4" />
-        </label>
       </article>
 
       <article class="settings-section">

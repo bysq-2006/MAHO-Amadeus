@@ -44,6 +44,26 @@ export function useConfigEditor() {
     }
   }
 
+  async function selectConfigPath() {
+    loading.value = true;
+    loadError.value = "";
+    status.value = "";
+
+    try {
+      const path = await invoke<string | null>("pick_config_file", {
+        currentPath: configPath.value.trim() || null,
+      });
+
+      if (path) {
+        await loadConfig(path);
+      }
+    } catch (error) {
+      loadError.value = String(error);
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function saveConfig(useRaw: boolean) {
     saving.value = true;
     loadError.value = "";
@@ -107,6 +127,7 @@ export function useConfigEditor() {
     selectedCharacter,
     selectedLlmLabel,
     loadConfig,
+    selectConfigPath,
     saveConfig,
     addCharacter,
     removeSelectedCharacter,

@@ -1,6 +1,5 @@
 components:
   llm:
-    system_prompt: ""
     select: ollama_api
     ollama_api:
       model: "maho"

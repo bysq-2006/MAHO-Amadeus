@@ -35,7 +35,6 @@ class WSHandler():
             # 如果没有配置角色，使用默认配置创建一个默认角色
             logging.warning("未在配置中找到角色定义，使用默认角色")
             default_config = {
-                "system_prompt": components.config.get("llm", {}).get("system_prompt", ""),
                 "tts_config": {}
             }
             self.characters["maho"] = Character("maho", default_config, components)

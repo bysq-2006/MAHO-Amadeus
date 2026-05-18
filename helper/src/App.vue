@@ -125,7 +125,7 @@ function fuzzyMatch(source: string, query: string) {
         v-model:query="homeQuery"
         :loading-config="editor.loading.value"
         :results="homeResults"
-        @load-config-path="editor.loadConfig(editor.configPath.value)"
+        @load-config-path="editor.selectConfigPath"
         @open-result="openHomeResult"
       />
 
@@ -491,6 +491,7 @@ button {
 
 .home-grid {
   display: grid;
+  align-items: start;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   gap: 16px;
 }

@@ -27,7 +27,6 @@ export interface CharacterConfig {
 
 export interface ConfigForm {
   llmSelect: string;
-  llmSystemPrompt: string;
   ollamaModel: string;
   ollamaBaseUrl: string;
   openaiApiKey: string;

@@ -171,6 +171,26 @@ if exist "%DIST%\backend" rd /s /q "%DIST%\backend"
 robocopy "%BACKEND%" "%DIST%\backend" /MIR /XD "__pycache__" "runtime" ".git" ".vscode" /XF "*.pyc" "*.pyo" /NFL /NDL /NJH /NJS /NP
 if errorlevel 8 set "EXITCODE=%ERRORLEVEL%" & goto FAIL
 
+set "PRIVATE_BACKEND_CONFIG=%DIST%\backend\data\config.yaml"
+set "EXPECTED_PRIVATE_BACKEND_CONFIG=%ROOT%\DIST\backend\data\config.yaml"
+if /i not "%PRIVATE_BACKEND_CONFIG%"=="%EXPECTED_PRIVATE_BACKEND_CONFIG%" goto PRIVATE_BACKEND_CONFIG_PATH_FAIL
+if not exist "%PRIVATE_BACKEND_CONFIG%" goto PRIVATE_BACKEND_CONFIG_CLEANED
+
+echo.
+echo 正在删除 DIST 中的私有测试配置：
+echo %PRIVATE_BACKEND_CONFIG%
+del /f /q "%PRIVATE_BACKEND_CONFIG%"
+if exist "%PRIVATE_BACKEND_CONFIG%" set "EXITCODE=1" & goto FAIL
+
+goto PRIVATE_BACKEND_CONFIG_CLEANED
+
+:PRIVATE_BACKEND_CONFIG_PATH_FAIL
+echo 私有测试配置路径检查失败，已停止删除。
+echo %PRIVATE_BACKEND_CONFIG%
+set "EXITCODE=1"
+goto FAIL
+
+:PRIVATE_BACKEND_CONFIG_CLEANED
 :ASK_BUILD_FRONTEND
 echo.
 echo 是否编译并复制前端到 DIST？

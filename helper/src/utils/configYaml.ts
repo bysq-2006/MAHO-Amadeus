@@ -3,7 +3,6 @@ import type { ConfigForm, Position } from "../types/config";
 export function createDefaultForm(): ConfigForm {
   return {
     llmSelect: "ollama_api",
-    llmSystemPrompt: "",
     ollamaModel: "",
     ollamaBaseUrl: "",
     openaiApiKey: "",
@@ -54,7 +53,6 @@ export function parseConfig(content: string): ConfigForm {
   const xfyun = getSection(asr, "xfyun_asr");
 
   form.llmSelect = getScalar(llm, "select", "ollama_api");
-  form.llmSystemPrompt = getScalar(llm, "system_prompt", "");
   form.ollamaModel = getScalar(ollamaApi, "model", "maho");
   form.ollamaBaseUrl = getScalar(ollamaApi, "base_url", "http://localhost:11434");
   form.openaiApiKey = getScalar(openaiApi, "api_key", "");
@@ -118,7 +116,6 @@ ${buildMultiline(character.systemPrompt)}
 
   return `components:
   llm:
-    system_prompt: ${yamlString(form.llmSystemPrompt)}
     select: ${form.llmSelect}
     ollama_api:
       model: ${yamlString(form.ollamaModel)}
